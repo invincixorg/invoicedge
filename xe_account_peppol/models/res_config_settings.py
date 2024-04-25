@@ -32,8 +32,8 @@ class ResConfigSettings(models.TransientModel):
 
     def _get_server_url(self):
         urls = {
-            'prod': 'https://e-invoice.xprodedge.com',
-            'test': 'https://0677-59-153-17-41.ngrok-free.app',
+            'prod': 'https://api.invoicedge.app',
+            'test': 'https://cc2c-59-153-17-41.ngrok-free.app',
         }
         return urls
 
@@ -56,10 +56,9 @@ class ResConfigSettings(models.TransientModel):
             raise ValidationError('Sorry! You have not chosen PEPPOL Electronic Document Mode (Test/Live).')
         url = self.account_peppol_edi_url
         try:
-            HEADERS['api_key'] = self.company_id.account_peppol_edi_api_key
             response = self.company_id._make_request(
                 f"{url}/api/v1/auth/verify-api-key",
-                params={}, headers=HEADERS, method="POST"
+                payload={'api_key': self.company_id.account_peppol_edi_api_key}, headers=HEADERS, method="POST"
             )
             json_response = json.loads(response.text)
             if not (200 <= response.status_code <= 299):
@@ -99,7 +98,7 @@ class ResConfigSettings(models.TransientModel):
             HEADERS['Authorization'] = f'Bearer {account_peppol_edi_refresh_token}'
             response = company_id._make_request(
                 f"{url}/api/v1/auth/refresh",
-                params={}, headers=HEADERS, method="POST"
+                payload={}, headers=HEADERS, method="POST"
             )
             json_response = json.loads(response.text)
             if response.status_code == 400:

@@ -32,10 +32,9 @@ class Company(models.Model):
         company = self.env.company
         return company.is_enable_peppol and company.account_peppol_verification_status == 'verified'
 
-    def _make_request(self, url, params=None, headers=None, method=None):
-        payload = json.dumps(params)
+    def _make_request(self, url, payload=None, headers=None, method=None):
         try:
-            response = requests.request(method, url, headers=headers, data=payload)
+            response = requests.request(method, url, headers=headers, data=json.dumps(payload))
             _logger.info(f'response --------- {url, headers, payload, response}')
         except Exception as e:
             raise AccessError(e)
